@@ -33,13 +33,10 @@ function MainContent() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [userProfileOpen, setUserProfileOpen] = useState(false)
 
-  // If not logged in, render the Login Page
-  if (!currentUser) {
-    return <LoginPage />
-  }
-
-  // Keyboard shortcut handler
+  // Keyboard shortcut handler (placed before conditional return to obey React Rules of Hooks)
   useEffect(() => {
+    if (!currentUser) return
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if (['INPUT', 'TEXTAREA', 'SELECT'].includes((e.target as HTMLElement)?.tagName)) {
         return
@@ -72,7 +69,12 @@ function MainContent() {
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [setIsAddItemOpen, setIsNewTxOpen, exportInventoryToCsv, setActiveNav, canAccessPage])
+  }, [currentUser, setIsAddItemOpen, setIsNewTxOpen, exportInventoryToCsv, setActiveNav, canAccessPage])
+
+  // If not logged in, render the Login Page
+  if (!currentUser) {
+    return <LoginPage />
+  }
 
   const hasAccessToCurrent = canAccessPage(activeNav)
 

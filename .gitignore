@@ -6,8 +6,10 @@ dist/
 dist-ssr/
 *.local
 *.tsbuildinfo
+.env
 .env.local
 .env.*.local
+version.json
 
 # Editor & System
 .DS_Store
