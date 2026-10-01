@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Production build output
+dist/
+dist-ssr/
+*.local
+*.tsbuildinfo
+.env.local
+.env.*.local
+
+# Editor & System
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.vscode/*
+!.vscode/extensions.json
+
+# Google Apps Script
+google-apps-script/
