@@ -19,6 +19,7 @@ import {
   Calendar,
   Zap,
   ArrowRight,
+  RefreshCw,
 } from 'lucide-react'
 import { useApp } from '@/lib/context'
 import { ItemMasterRecord } from '@/lib/types'
@@ -35,6 +36,8 @@ export function OverviewPage() {
     setIsAddItemOpen,
     setIsNewTxOpen,
     exportInventoryToCsv,
+    refreshData,
+    isSyncing,
   } = useApp()
 
   const [activeTab, setActiveTab] = useState<OverviewTab>('Reorder')
@@ -259,6 +262,14 @@ export function OverviewPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => refreshData()}
+            disabled={isSyncing}
+            className="flex items-center gap-1.5 rounded-lg border border-[#dfe4e8] bg-white px-3.5 py-2 text-[12px] font-semibold text-[#17604f] shadow-2xs hover:bg-[#edf5f2] disabled:opacity-60 transition-all active:scale-95"
+          >
+            <RefreshCw className={`size-3.5 text-[#17604f] ${isSyncing ? 'animate-spin' : ''}`} />
+            <span>{isSyncing ? 'Syncing...' : 'Sync Live Data'}</span>
+          </button>
           <button
             onClick={exportInventoryToCsv}
             className="flex items-center gap-1.5 rounded-lg border border-[#dfe4e8] bg-white px-3.5 py-2 text-[12px] font-semibold text-[#535f6d] shadow-2xs hover:bg-[#f8fafb]"
@@ -587,8 +598,25 @@ export function OverviewPage() {
 
         {/* Workbench Table */}
         {workbenchItems.length === 0 ? (
-          <div className="py-12 text-center text-[13px] text-[#85919e]">
-            No items matching the selected criteria.
+          <div className="py-12 text-center text-[13px] text-[#85919e] flex flex-col items-center justify-center gap-2">
+            {inventory.length === 0 ? (
+              <>
+                <p className="font-semibold text-[#37424f]">No inventory items loaded yet</p>
+                <p className="text-[12px] text-[#7d8b9b] max-w-md">
+                  Fetch your live plant material master and inventory stock directly from Google Sheets.
+                </p>
+                <button
+                  onClick={() => refreshData()}
+                  disabled={isSyncing}
+                  className="mt-2 flex items-center gap-2 rounded-lg bg-[#17604f] px-4 py-2 text-[12px] font-semibold text-white shadow-2xs hover:bg-[#124b3e] disabled:opacity-60 transition-all active:scale-95"
+                >
+                  <RefreshCw className={`size-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
+                  {isSyncing ? 'Connecting to Google Sheets...' : 'Sync Live Inventory Now'}
+                </button>
+              </>
+            ) : (
+              <p>No items matching the selected criteria.</p>
+            )}
           </div>
         ) : (
           <div className="overflow-x-auto">

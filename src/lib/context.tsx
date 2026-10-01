@@ -96,6 +96,9 @@ interface AppContextType {
   setIsNewTxOpen: (open: boolean) => void
 }
 
+export const DEFAULT_APPS_SCRIPT_URL =
+  'https://script.google.com/macros/s/AKfycbxR1cTolhYrAEEwx1dOJpNFa9UEF0VKMDdUCp_FAkcL4MX-Y8TnmOnBOPzewnwWrgZugg/exec'
+
 const AppContext = createContext<AppContextType | undefined>(undefined)
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
@@ -133,7 +136,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   // 5. Outgoing sheet
   const [outgoing, setOutgoing] = useState<OutgoingRecord[]>(initialOutgoing)
 
-  // Google Apps Script Web App URL from .env or localStorage
+  // Google Apps Script Web App URL from localStorage, .env, or verified default
   const [appScriptUrl, setAppScriptUrl] = useState<string>(() => {
     const envUrl =
       import.meta.env.VITE_APPS_SCRIPT_URL ||
@@ -142,7 +145,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     const saved =
       localStorage.getItem('alphapharma_apps_script_url') ||
       localStorage.getItem('forgeflow_apps_script_url')
-    return saved !== null && saved !== '' ? saved : envUrl
+    return (saved !== null && saved !== '') ? saved : (envUrl || DEFAULT_APPS_SCRIPT_URL)
   })
   const [isSyncing, setIsSyncing] = useState(false)
   const [lastSyncTime, setLastSyncTime] = useState<string | null>(null)

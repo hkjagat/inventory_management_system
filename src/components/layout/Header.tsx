@@ -13,7 +13,8 @@ import {
   AlertTriangle,
   Info,
   X,
-  ExternalLink
+  ExternalLink,
+  RefreshCw,
 } from 'lucide-react'
 import { useApp } from '@/lib/context'
 
@@ -32,6 +33,9 @@ export function Header({ onMobileMenuToggle, onOpenProfile }: HeaderProps) {
     setIsAddItemOpen,
     setIsNewTxOpen,
     setActiveNav,
+    isSyncing,
+    refreshData,
+    lastSyncTime,
   } = useApp()
 
   const [notificationsOpen, setNotificationsOpen] = useState(false)
@@ -95,6 +99,16 @@ export function Header({ onMobileMenuToggle, onOpenProfile }: HeaderProps) {
         >
           <Plus className="size-3.5" />
           <span className="hidden sm:inline">Add Item</span>
+        </button>
+
+        <button
+          onClick={() => refreshData()}
+          disabled={isSyncing}
+          title={lastSyncTime ? `Last synced: ${lastSyncTime}` : 'Sync latest plant data from Google Sheets'}
+          className="flex items-center gap-1.5 rounded-lg border border-[#dfe4e8] bg-white px-2.5 sm:px-3 py-2 text-[12px] font-semibold text-[#17604f] shadow-2xs hover:bg-[#edf5f2] disabled:opacity-60 transition-all active:scale-95"
+        >
+          <RefreshCw className={`size-3.5 text-[#17604f] ${isSyncing ? 'animate-spin' : ''}`} />
+          <span className="hidden sm:inline">{isSyncing ? 'Syncing...' : 'Sync'}</span>
         </button>
 
         <div className="h-6 w-px bg-[#e5e8ed]" />
