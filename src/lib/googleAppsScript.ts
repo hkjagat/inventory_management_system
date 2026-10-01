@@ -796,6 +796,8 @@ export async function callAppsScriptApi(url: string, payload: any, timeoutMs: nu
     const response = await fetch(url, {
       method: 'POST',
       mode: 'cors',
+      credentials: 'omit',
+      redirect: 'follow',
       headers: {
         'Content-Type': 'text/plain;charset=utf-8',
       },
@@ -803,7 +805,21 @@ export async function callAppsScriptApi(url: string, payload: any, timeoutMs: nu
       signal: controller.signal,
     })
 
-    return await response.json()
+    const text = await response.text()
+    if (!response.ok) {
+      if (text.includes('<!DOCTYPE') || text.includes('<html')) {
+        throw new Error(
+          `Google Apps Script returned HTTP ${response.status} (Not Found or Access Denied). If multiple Google accounts are active in Chrome, try Incognito or verify Web App access is set to "Anyone".`
+        )
+      }
+      throw new Error(`Google Apps Script error ${response.status}: ${text}`)
+    }
+
+    try {
+      return JSON.parse(text)
+    } catch {
+      throw new Error(`Invalid JSON received from Google Apps Script: ${text.slice(0, 120)}...`)
+    }
   } finally {
     clearTimeout(timeoutId)
   }
@@ -821,12 +837,29 @@ export async function fetchAllFromAppsScript(url: string, timeoutMs: number = 25
     const response = await fetch(`${url}?action=getAllData`, {
       method: 'GET',
       mode: 'cors',
+      credentials: 'omit',
+      redirect: 'follow',
       signal: controller.signal,
     })
 
-    return await response.json()
+    const text = await response.text()
+    if (!response.ok) {
+      if (text.includes('<!DOCTYPE') || text.includes('<html')) {
+        throw new Error(
+          `Google Apps Script returned HTTP ${response.status} (Not Found or Access Denied). If multiple Google accounts are active in Chrome, try Incognito or verify Web App access is set to "Anyone".`
+        )
+      }
+      throw new Error(`Google Apps Script error ${response.status}: ${text}`)
+    }
+
+    try {
+      return JSON.parse(text)
+    } catch {
+      throw new Error(`Invalid JSON received from Google Apps Script: ${text.slice(0, 120)}...`)
+    }
   } finally {
     clearTimeout(timeoutId)
   }
 }
+
 
